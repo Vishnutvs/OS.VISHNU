@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+#define MAX_FRAMES 10
+
+int main()
+{
+    int pages[MAX_FRAMES], page_frames, page_faults = 0, page_index = 0, page_reference, i, j, found;
+
+    printf("Enter the number of page frames: ");
+    scanf("%d", &page_frames);
+
+    printf("Enter the page reference sequence (separated by spaces): ");
+    for (i = 0; i < page_frames; i++)
+        scanf("%d", &pages[i]);
+
+    for (; i < MAX_FRAMES; i++)
+        pages[i] = -1;
+
+    printf("\nPage reference sequence\tPage Frames\n");
+    for (i = 0; i < MAX_FRAMES; i++)
+        printf("-");
+
+    printf("\n");
+
+    for (i = 0; i < MAX_FRAMES; i++)
+    {
+        printf("%d\t\t\t", page_reference);
+
+        found = 0;
+        for (j = 0; j < page_frames; j++)
+        {
+            if (pages[j] == page_reference)
+            {
+                found = 1;
+                break;
+            }
+        }
+
+        if (found == 0)
+        {
+            pages[page_index] = page_reference;
+            page_index = (page_index + 1) % page_frames;
+            page_faults++;
+        }
+
+        for (j = 0; j < page_frames; j++)
+        {
+            if (pages[j] == -1)
+                printf("- ");
+            else
+                printf("%d ", pages[j]);
+        }
+
+        printf("\n");
+
+        if (i < 7)
+            scanf("%d", &page_reference);
+        else
+            page_reference = 5;
+    }
+
+    printf("\nTotal page faults = %d\n", page_faults);
+
+    return 0;
+}
