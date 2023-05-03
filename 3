@@ -1,0 +1,33 @@
+#include <stdio.h>
+
+int main() {
+    int partitions[] = {300, 600, 350, 200, 750, 125};
+    int num_partitions = sizeof(partitions) / sizeof(partitions[0]);
+    int processes[] = {115, 500, 358, 200, 375};
+    int num_processes = sizeof(processes) / sizeof(processes[0]);
+    int i, j, allocated;
+
+    
+    int allocation[num_partitions];
+    for (i = 0; i < num_partitions; i++) {
+        allocation[i] = -1;
+    }
+
+    
+    for (i = 0; i < num_processes; i++) {
+        allocated = 0;
+        for (j = 0; j < num_partitions; j++) {
+            if (allocation[j] == -1 && processes[i] <= partitions[j]) {
+                allocation[j] = i;
+                allocated = 1;
+                printf("Process %d allocated to partition %d (size %d KB)\n", i+1, j+1, partitions[j]);
+                break;
+            }
+        }
+        if (!allocated) {
+            printf("Process %d cannot be allocated\n", i+1);
+        }
+    }
+
+    return 0;
+}
