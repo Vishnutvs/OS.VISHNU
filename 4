@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int pid;    // process ID
+    int at;     // arrival time
+    int bt;     // burst time
+    int wt;     // waiting time
+    int tat;    // turnaround time
+    int rt;     // remaining time
+} process;
+
+// compare function for qsort
+int cmp(const void *a, const void *b) {
+    process *p1 = (process *)a;
+    process *p2 = (process *)b;
+    return p1->at - p2->at;
+}
+
+int main() {
+    int n = 4; // number of processes
+    process *p = malloc(n * sizeof(process));
+    // initialize processes
+    p[0].pid = 1; p[0].at = 0; p[0].bt = 5;
+    p[1].pid = 2; p[1].at = 1; p[1].bt = 3;
+    p[2].pid = 3; p[2].at = 2; p[2].bt = 3;
+    p[3].pid = 4; p[3].at = 4; p[3].bt = 1;
+    for (int i = 0; i < n; i++) {
+        p[i].wt = 0;
+        p[i].tat = 0;
+        p[i].rt = p[i].bt;
+    }
+    int t = 0; // current time
+    int done = 0; // number of processes completed
+    int min_rt = 1000000; // minimum remaining time
+    int min_idx = -1; // index of process with minimum remaining time
+    while (done < n) {
+        min_rt = 1000000;
+        min_idx = -1;
+        for (int i = 0; i < n; i++) {
+            if (p[i].at <= t && p[i].rt < min_rt && p[i].rt > 0) {
+                min_rt = p[i].rt;
+                min_idx = i;
+            }
+        }
+        if (min_idx == -1) {
+            t++;
+            continue;
+        }
+        p[min_idx].rt--;
+        if (p[min_idx].rt == 0) {
+            done++;
+            p[min_idx].tat = t + 1 - p[min_idx].at;
+            p[min_idx].wt = p[min_idx].tat - p[min_idx].bt;
+        }
+        t++;
+    }
+    // calculate average waiting time and turnaround time
+    float avg_wt = 0, avg_tat = 0;
+    for (int i = 0; i < n; i++) {
+        avg_wt += p[i].wt;
+        avg_tat += p[i].tat;
+    }
+    avg_wt /= n;
+    avg_tat /= n;
+    // print results
+    printf("Process\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d\t%d\t\t%d\t\t%d\t\t%d\n", p[i].pid, p[i].at, p[i].bt, p[i].wt, p[i].tat);
+    }
+    printf("Average waiting time: %.2f\n", avg_wt);
+    printf("Average
