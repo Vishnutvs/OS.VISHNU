@@ -1,0 +1,61 @@
+#include <stdio.h>
+
+int main()
+{
+    int n = 4; 
+    int bt[] = {6, 8, 7, 3}; 
+    int wt[n], tat[n], total_wt = 0, total_tat = 0;
+    float avg_wt, avg_tat;
+
+    
+    for (int i = 0; i < n; i++) {
+        int min_idx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (bt[j] < bt[min_idx]) {
+                min_idx = j;
+            }
+        }
+    
+        int temp = bt[i];
+        bt[i] = bt[min_idx];
+        bt[min_idx] = temp;
+    }
+
+    
+    wt[0] = 0;
+    tat[0] = bt[0];
+    for (int i = 1; i < n; i++) {
+        wt[i] = tat[i-1];
+        tat[i] = wt[i] + bt[i];
+    }
+
+    for (int i = 0; i < n; i++) {
+        total_wt += wt[i];
+        total_tat += tat[i];
+    }
+
+    avg_wt = (float)total_wt / n;
+    avg_tat = (float)total_tat / n;
+
+    
+    printf("Gantt Chart:\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d ", i+1);
+        for (int j = 0; j < bt[i]; j++) {
+            printf("-");
+        }
+        printf(" ");
+    }
+    printf("\n");
+
+    
+    printf("\nProcess\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d\t%d\t\t%d\t\t%d\n", i+1, bt[i], wt[i], tat[i]);
+    }
+
+    printf("\nAverage Waiting Time: %.2f\n", avg_wt);
+    printf("Average Turnaround Time: %.2f\n", avg_tat);
+
+    return 0
+    }
