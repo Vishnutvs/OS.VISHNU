@@ -1,0 +1,38 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+    int n, head, i, j, total_movement = 0;
+
+    printf("Enter the number of tracks: ");
+    scanf("%d", &n);
+
+    int tracks[n];
+
+    printf("Enter the track positions:\n");
+
+    for(i=0;i<n;i++)
+        scanf("%d", &tracks[i]);
+
+    printf("Enter the initial head position: ");
+    scanf("%d", &head);
+
+    // Add the head movement to the total movement
+    total_movement += abs(head - tracks[0]);
+
+    // Move the head to the first track
+    head = tracks[0];
+
+    // Calculate the total head movement by moving the head to all tracks in FCFS order
+    for(i=1;i<n;i++)
+    {
+        total_movement += abs(head - tracks[i]);
+        head = tracks[i];
+    }
+
+    printf("Total head movement = %d\n", total_movement);
+    printf("Average head movement = %.2f\n", (float)total_movement/n);
+
+    return 0;
+}
