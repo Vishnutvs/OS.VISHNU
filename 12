@@ -1,0 +1,58 @@
+#include<stdio.h>
+
+// Function to allocate memory block to each process using best-fit algorithm
+void best_fit(int memory[], int n, int process_size[], int m) {
+    int allocation[m];  // To store allocation info for each process
+    int i, j;
+
+    // Initialize all allocations as -1, indicating no allocation yet
+    for (i = 0; i < m; i++)
+        allocation[i] = -1;
+
+    // Traverse through all process sizes one by one
+    for (i = 0; i < m; i++) {
+        int best_index = -1;
+        for (j = 0; j < n; j++) {
+            if (memory[j] >= process_size[i]) {
+                if (best_index == -1 || memory[j] < memory[best_index])
+                    best_index = j;
+            }
+        }
+
+        // If no block could be allocated, skip this process
+        if (best_index != -1) {
+            allocation[i] = best_index;
+            memory[best_index] -= process_size[i];
+        }
+    }
+
+    // Print allocation info for each process
+    printf("\nProcess No.\tProcess Size\tBlock No.\n");
+    for (i = 0; i < m; i++) {
+        printf("    %d\t\t    %d\t\t    ", i+1, process_size[i]);
+        if (allocation[i] != -1)
+            printf("%d\n", allocation[i] + 1);
+        else
+            printf("Not Allocated\n");
+    }
+}
+
+// Driver code
+int main() {
+    int memory[] = {300, 600, 350, 200, 750, 125};
+    int process_size[] = {115, 500, 358, 200, 375};
+    int n = sizeof(memory)/sizeof(memory[0]);
+    int m = sizeof(process_size)/sizeof(process_size[0]);
+
+    best_fit(memory, n, process_size, m);
+
+    return 0;
+}
+
+output :
+Process No.	Process Size	Block No.
+    1		    115		    6
+    2		    500		    2
+    3		    358		    2
+    4		    200		    4
+    5		    375		    2
