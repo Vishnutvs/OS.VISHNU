@@ -1,0 +1,58 @@
+#include <stdio.h>
+#define MAX_FRAMES 3
+
+int main() {
+    int frames[MAX_FRAMES], page_faults = 0;
+    int pages[] = {7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7,0,1};
+    int n = sizeof(pages) / sizeof(int);
+    int oldest_frame_index, max_future_distance, j, k;
+
+    for (int i = 0; i < n; i++) {
+        int page = pages[i];
+        int page_found = 0;
+
+        for (j = 0; j < MAX_FRAMES; j++) {
+            if (frames[j] == page) {
+                page_found = 1;
+                break;
+            }
+        }
+
+        if (!page_found) {
+            page_faults++;
+
+            if (i < MAX_FRAMES) {
+                frames[i] = page;
+            } else {
+                oldest_frame_index = -1;
+                max_future_distance = -1;
+
+                for (j = 0; j < MAX_FRAMES; j++) {
+                    int future_distance = 0;
+
+                    for (k = i + 1; k < n; k++) {
+                        if (frames[j] == pages[k]) {
+                            break;
+                        }
+
+                        future_distance++;
+                    }
+
+                    if (future_distance > max_future_distance) {
+                        max_future_distance = future_distance;
+                        oldest_frame_index = j;
+                    }
+                }
+
+                frames[oldest_frame_index] = page;
+            }
+        }
+    }
+
+    printf("Page Faults: %d\n", page_faults);
+    return 0;
+}
+
+output:
+
+Page Faults: 11
