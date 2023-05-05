@@ -1,0 +1,45 @@
+ #include <stdio.h>
+
+int main() {
+    int n = 3; // number of processes
+    int burst_time[] = {10, 15, 25};
+    int waiting_time[n], turnaround_time[n];
+    int total_waiting_time = 0, total_turnaround_time = 0;
+    
+    // Calculate waiting time and turnaround time for each process
+    waiting_time[0] = 0;
+    turnaround_time[0] = burst_time[0];
+    for (int i = 1; i < n; i++) {
+        waiting_time[i] = waiting_time[i-1] + burst_time[i-1];
+        turnaround_time[i] = waiting_time[i] + burst_time[i];
+    }
+    
+    // Calculate total waiting time and total turnaround time
+    for (int i = 0; i < n; i++) {
+        total_waiting_time += waiting_time[i];
+        total_turnaround_time += turnaround_time[i];
+    }
+    
+    // Calculate average waiting time and average turnaround time
+    float avg_waiting_time = (float)total_waiting_time / n;
+    float avg_turnaround_time = (float)total_turnaround_time / n;
+    
+    // Print results
+    printf("Process\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d\t%d\t\t%d\t\t%d\n", i+1, burst_time[i], waiting_time[i], turnaround_time[i]);
+    }
+    printf("Average Waiting Time: %.2f\n", avg_waiting_time);
+    printf("Average Turnaround Time: %.2f\n", avg_turnaround_time);
+    
+    return 0;
+}
+
+output :
+
+Process	Burst Time	Waiting Time	Turnaround Time
+P1	10		0		10
+P2	15		10		25
+P3	25		25		50
+Average Waiting Time: 11.67
+Average Turnaround Time: 28.33
