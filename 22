@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_USERS 10
+#define MAX_FILES_PER_USER 10
+#define MAX_FILENAME_LENGTH 20
+#define MAX_DIRNAME_LENGTH 20
+
+struct user {
+    char name[MAX_DIRNAME_LENGTH];
+    char files[MAX_FILES_PER_USER][MAX_FILENAME_LENGTH];
+    int num_files;
+};
+
+struct user users[MAX_USERS];
+int num_users = 0;
+
+void create_user(char* name) {
+    if (num_users == MAX_USERS) {
+        printf("Maximum number of users reached.\n");
+        return;
+    }
+
+    struct user new_user;
+    strcpy(new_user.name, name);
+    new_user.num_files = 0;
+
+    users[num_users++] = new_user;
+
+    printf("User %s created.\n", name);
+}
+
+void create_file(char* username, char* filename) {
+    int user_index = -1;
+    for (int i = 0; i < num_users; i++) {
+        if (strcmp(users[i].name, username) == 0) {
+            user_index = i;
+            break;
+        }
+    }
+
+    if (user_index == -1) {
+        printf("User %s does not exist.\n", username);
+        return;
+    }
+
+    if (users[user_index].num_files == MAX_FILES_PER_USER) {
+        printf("Maximum number of files reached for user %s.\n", username);
+        return;
+    }
+
+    strcpy(users[user_index].files[users[user_index].num_files++], filename);
+    printf("File %s created in user directory %s.\n", filename, username);
+}
+
+int main() {
+    create_user("user1");
+    create_file("user1", "file1.txt");
+    create_file("user1", "file2.txt");
+    create_file("user1", "file3.txt");
+
+    create_user("user2");
+    create_file("user2", "file4.txt");
+    create_file("user2", "file5.txt");
+
+    create_user("user3");
+    create_file("user3", "file6.txt");
+    create_file("user3", "file7.txt");
+
+    return 0;
+}
+output:
+
+/tmp/XlosRniWUJ.o
+User user1 created.
+File file1.txt created in user directory user1.
+File file2.txt created in user directory user1.
+File file3.txt created in user directory user1.
+User user2 created.
+File file4.txt created in user directory user2.
+File file5.txt created in user directory user2.
+User user3 created.
+File file6.txt created in user directory user3.
+File file7.txt created in user directory user3.
