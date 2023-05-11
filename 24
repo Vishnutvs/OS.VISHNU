@@ -1,0 +1,19 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define BLOCK_SIZE 8192 // 8 KB block size
+#define POINTERS_PER_BLOCK (BLOCK_SIZE / sizeof(int)) // Number of pointers in a block
+#define DIRECT_BLOCKS 12 // Number of direct blocks
+#define INDIRECT_BLOCKS 1 // Number of single indirect blocks
+#define DOUBLE_INDIRECT_BLOCKS 1 // Number of double indirect blocks
+#define TRIPLE_INDIRECT_BLOCKS 1 // Number of triple indirect blocks
+#define MAX_FILE_SIZE ((DIRECT_BLOCKS + POINTERS_PER_BLOCK * INDIRECT_BLOCKS + POINTERS_PER_BLOCK * POINTERS_PER_BLOCK * DOUBLE_INDIRECT_BLOCKS + POINTERS_PER_BLOCK * POINTERS_PER_BLOCK * POINTERS_PER_BLOCK * TRIPLE_INDIRECT_BLOCKS) * BLOCK_SIZE) // Maximum file size in bytes
+
+int main() {
+    printf("Maximum file size: %ld bytes\n", MAX_FILE_SIZE);
+    return 0;
+}
+
+output:
+
+Maximum file size: 70403120791552 bytes
