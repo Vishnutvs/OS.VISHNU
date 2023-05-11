@@ -1,0 +1,193 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+#define NUM_PHILOSOPHERS 5
+#define LEFT(i) ((i + NUM_PHILOSOPHERS - 1) % NUM_PHILOSOPHERS)
+#define RIGHT(i) ((i + 1) % NUM_PHILOSOPHERS)
+
+enum state_t { THINKING, HUNGRY, EATING };
+char* state_names[] = { "THINKING", "HUNGRY", "EATING" };
+
+enum state_t state[NUM_PHILOSOPHERS] = { THINKING, THINKING, THINKING, THINKING, THINKING };
+sem_t forks[NUM_PHILOSOPHERS];
+sem_t mutex;
+
+void print_states() {
+    printf("[");
+    for (int i = 0; i < NUM_PHILOSOPHERS; i++) {
+        printf("%s", state_names[state[i]]);
+        if (i < NUM_PHILOSOPHERS - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+}
+
+void test(int i) {
+    if (state[i] == HUNGRY && state[LEFT(i)] != EATING && state[RIGHT(i)] != EATING) {
+        state[i] = EATING;
+        sem_post(&forks[i]);
+    }
+}
+
+void pickup(int i) {
+    sem_wait(&mutex);
+    state[i] = HUNGRY;
+    print_states();
+    test(i);
+    sem_post(&mutex);
+    sem_wait(&forks[i]);
+}
+
+void putdown(int i) {
+    sem_wait(&mutex);
+    state[i] = THINKING;
+    print_states();
+    test(LEFT(i));
+    test(RIGHT(i));
+    sem_post(&mutex);
+}
+
+void* philosopher(void* arg) {
+    int i = *(int*) arg;
+    while (1) {
+        printf("Philosopher %d is thinking\n", i);
+        sleep(rand() % 5);
+        pickup(i);
+        printf("Philosopher %d is eating\n", i);
+        sleep(rand() % 5);
+        putdown(i);
+    }
+}
+
+int main() {
+    srand(time(NULL));
+    pthread_t threads[NUM_PHILOSOPHERS];
+    sem_init(&mutex, 0, 1);
+    for (int i = 0; i < NUM_PHILOSOPHERS; i++) {
+        sem_init(&forks[i], 0, 1);
+    }
+    int ids[NUM_PHILOSOPHERS];
+    for (int i = 0; i < NUM_PHILOSOPHERS; i++) {
+        ids[i] = i;
+        pthread_create(&threads[i], NULL, philosopher, &ids[i]);
+    }
+    for (int i = 0; i < NUM_PHILOSOPHERS; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    return 0;
+}
+
+output:
+
+/tmp/jJ8A6FgcbS.o
+Philosopher 0 is thinking
+Philosopher 1 is thinking
+Philosopher 2 is thinking
+Philosopher 3 is thinking
+Philosopher 4 is thinking
+[HUNGRY, THINKING, THINKING, THINKING, THINKING]
+Philosopher 0 is eating
+[EATING, HUNGRY, THINKING, THINKING, THINKING]
+Philosopher 1 is eating
+[EATING, HUNGRY, HUNGRY, THINKING, THINKING]
+Philosopher 2 is eating
+[EATING, HUNGRY, EATING, THINKING, HUNGRY]
+Philosopher 4 is eating
+[EATING, HUNGRY, EATING, HUNGRY, HUNGRY]
+Philosopher 3 is eating
+[THINKING, HUNGRY, EATING, HUNGRY, HUNGRY]
+Philosopher 0 is thinking
+[HUNGRY, HUNGRY, EATING, HUNGRY, EATING]
+Philosopher 0 is eating
+[HUNGRY, THINKING, EATING, HUNGRY, EATING]
+Philosopher 1 is thinking
+[HUNGRY, THINKING, EATING, THINKING, EATING]
+Philosopher 3 is thinking
+[HUNGRY, HUNGRY, EATING, THINKING, EATING]
+[HUNGRY, HUNGRY, THINKING, THINKING, EATING]
+Philosopher 2 is thinking
+[HUNGRY, EATING, THINKING, THINKING, THINKING]
+Philosopher 4 is thinking
+Philosopher 1 is eating
+[THINKING, EATING, THINKING, THINKING, THINKING]
+Philosopher 0 is thinking
+[THINKING, EATING, HUNGRY, THINKING, THINKING]
+Philosopher 2 is eating
+[THINKING, EATING, HUNGRY, HUNGRY, THINKING]
+Philosopher 3 is eating
+[THINKING, EATING, THINKING, EATING, THINKING]
+Philosopher 2 is thinking
+[THINKING, EATING, HUNGRY, EATING, THINKING]
+[THINKING, EATING, HUNGRY, EATING, HUNGRY]
+Philosopher 4 is eating
+[HUNGRY, EATING, HUNGRY, EATING, HUNGRY]
+[HUNGRY, EATING, HUNGRY, THINKING, HUNGRY]
+Philosopher 3 is thinking
+[HUNGRY, THINKING, HUNGRY, THINKING, EATING]
+Philosopher 1 is thinking
+Philosopher 2 is eating
+[HUNGRY, THINKING, THINKING, THINKING, EATING]
+Philosopher 2 is thinking
+[HUNGRY, THINKING, THINKING, THINKING, THINKING]
+Philosopher 4 is thinking
+Philosopher 0 is eating
+[EATING, HUNGRY, THINKING, THINKING, THINKING]
+[EATING, HUNGRY, THINKING, HUNGRY, THINKING]
+Philosopher 3 is eating
+[EATING, HUNGRY, THINKING, EATING, HUNGRY]
+Philosopher 4 is eating
+[EATING, HUNGRY, THINKING, THINKING, HUNGRY]
+Philosopher 3 is thinking
+[EATING, HUNGRY, HUNGRY, THINKING, HUNGRY]
+Philosopher 2 is eating
+[THINKING, HUNGRY, EATING, THINKING, HUNGRY]
+Philosopher 0 is thinking
+[THINKING, HUNGRY, EATING, THINKING, THINKING]
+Philosopher 4 is thinking
+[HUNGRY, HUNGRY, EATING, THINKING, THINKING]
+Philosopher 0 is eating
+[EATING, HUNGRY, EATING, HUNGRY, THINKING]
+[THINKING, HUNGRY, EATING, HUNGRY, THINKING]
+Philosopher 0 is thinking
+[THINKING, HUNGRY, THINKING, HUNGRY, THINKING]
+Philosopher 2 is thinking
+Philosopher 1 is eating
+Philosopher 3 is eating
+[THINKING, EATING, THINKING, THINKING, THINKING]
+Philosopher 3 is thinking
+[THINKING, EATING, THINKING, THINKING, HUNGRY]
+Philosopher 4 is eating
+[THINKING, EATING, THINKING, THINKING, THINKING]
+Philosopher 4 is thinking
+[THINKING, THINKING, THINKING, THINKING, THINKING]
+Philosopher 1 is thinking
+[THINKING, THINKING, THINKING, THINKING, HUNGRY]
+Philosopher 4 is eating
+[THINKING, THINKING, THINKING, THINKING, THINKING]
+Philosopher 4 is thinking
+[THINKING, HUNGRY, THINKING, THINKING, THINKING]
+Philosopher 1 is eating
+[THINKING, EATING, THINKING, HUNGRY, THINKING]
+Philosopher 3 is eating
+[THINKING, EATING, HUNGRY, EATING, THINKING]
+[HUNGRY, EATING, HUNGRY, EATING, THINKING]
+[HUNGRY, THINKING, HUNGRY, EATING, THINKING]
+Philosopher 1 is thinking
+Philosopher 0 is eating
+[EATING, THINKING, HUNGRY, THINKING, THINKING]
+Philosopher 3 is thinking
+Philosopher 2 is eating
+[EATING, THINKING, EATING, THINKING, HUNGRY]
+Philosopher 4 is eating
+[EATING, HUNGRY, EATING, THINKING, HUNGRY]
+[THINKING, HUNGRY, EATING, THINKING, HUNGRY]
+Philosopher 0 is thinking
+[THINKING, HUNGRY, THINKING, THINKING, EATING]
+Philosopher 2 is thinking
+Philosopher 1 is eating
+
+  
