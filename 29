@@ -1,0 +1,68 @@
+#include <stdio.h>
+
+#define MAX_PARTITIONS 10
+
+int partitions[MAX_PARTITIONS]; // array to store memory partitions
+int num_partitions = 0; // number of memory partitions
+
+void init_partitions() {
+    partitions[0] = 40; // 40 KB partition
+    partitions[1] = 10; // 10 KB partition
+    partitions[2] = 30; // 30 KB partition
+    partitions[3] = 60; // 60 KB partition
+    num_partitions = 4;
+}
+
+int first_fit(int size) {
+    int i;
+    for (i = 0; i < num_partitions; i++) {
+        if (partitions[i] >= size) { // partition is big enough
+            partitions[i] -= size; // allocate memory
+            return i; // return partition number
+        }
+    }
+    return -1; // no partition is big enough
+}
+
+void print_partitions() {
+    int i;
+    for (i = 0; i < num_partitions; i++) {
+        printf("%d KB ", partitions[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    init_partitions();
+    
+    printf("Memory partitions: ");
+    print_partitions();
+    
+    // test case
+    int sizes[] = {100, 50, 30, 120, 35};
+    int num_sizes = sizeof(sizes) / sizeof(int);
+    
+    int i;
+    for (i = 0; i < num_sizes; i++) {
+        int size = sizes[i];
+        int partition = first_fit(size);
+        if (partition == -1) {
+            printf("Error: Not enough memory for process of size %d KB.\n", size);
+        } else {
+            printf("Allocated %d KB in partition %d. Memory partitions: ", size, partition);
+            print_partitions();
+        }
+    }
+    
+    return 0;
+}
+
+output:
+
+ERROR!
+Memory partitions: 40 KB 10 KB 30 KB 60 KB 
+Error: Not enough memory for process of size 100 KB.
+Allocated 50 KB in partition 3. Memory partitions: 40 KB 10 KB 30 KB 10 KB 
+Allocated 30 KB in partition 0. Memory partitions: 10 KB 10 KB 30 KB 10 KB 
+Error: Not enough memory for process of size 120 KB.
+Error: Not enough memory for process of size 35 KB.
