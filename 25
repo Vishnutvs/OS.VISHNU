@@ -1,0 +1,34 @@
+#include <stdio.h>
+
+#define BLOCK_SIZE 100
+#define MEMORY_ACCESS 1
+
+int calculateContiguous(int blockNumber) {
+    return 1; // Only one I/O operation required for contiguous allocation
+}
+
+int calculateLinked(int blockNumber) {
+    return blockNumber + 1; // Number of blocks accessed in linked allocation
+}
+
+int calculateIndexed(int blockNumber) {
+    return 2; // Two I/O operations required for indexed allocation
+}
+
+int main() {
+    int blockNumber;
+
+    printf("Enter the block number to be added: ");
+    scanf("%d", &blockNumber);
+
+    printf("\nContiguous Allocation:\n");
+    printf("Number of I/O operations required: %d\n", calculateContiguous(blockNumber));
+
+    printf("\nLinked Allocation:\n");
+    printf("Number of I/O operations required: %d\n", calculateLinked(blockNumber));
+
+    printf("\nIndexed Allocation:\n");
+    printf("Number of I/O operations required: %d\n", calculateIndexed(blockNumber));
+
+    return 0;
+}
