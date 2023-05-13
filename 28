@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#define MAX_BUF_SIZE 1024
+
+int main() {
+    int fd, bytes_read;
+    char buf[MAX_BUF_SIZE];
+
+    // create a file using the system call
+    fd = open("file.txt", O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
+
+    if (fd == -1) {
+        printf("Error creating file!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Enter data to be written to the file:\n");
+    scanf("%[^\n]%*c", buf);
+
+    // write the data to the file
+    if (write(fd, buf, strlen(buf)) == -1) {
+        printf("Error writing to file!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // close the file
+    close(fd);
+
+    // open the file for reading
+    fd = open("file.txt", O_RDONLY);
+
+    if (fd == -1) {
+        printf("Error opening file for reading!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // read the data from the file
+    bytes_read = read(fd, buf, MAX_BUF_SIZE);
+
+    if (bytes_read == -1) {
+        printf("Error reading from file!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // print the data to the console
+    printf("Data read from file:\n%s\n", buf);
+
+    // close the file
+    close(fd);
+
+    return 0;
+}
+
+output:
+Error creating file!
