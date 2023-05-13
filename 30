@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <pthread.h>
+
+void *print_even(void *arg);
+void *print_odd(void *arg);
+
+int main()
+{
+    pthread_t tid1, tid2; // two threads
+    int n = 10; // number of integers to print
+
+    // create thread for even numbers
+    pthread_create(&tid1, NULL, print_even, &n);
+
+    // create thread for odd numbers
+    pthread_create(&tid2, NULL, print_odd, &n);
+
+    // wait for threads to finish
+    pthread_join(tid1, NULL);
+    pthread_join(tid2, NULL);
+
+    return 0;
+}
+
+void *print_even(void *arg)
+{
+    int n = *(int *)arg;
+    for (int i = 0; i <= n; i += 2) {
+        printf("%d ", i);
+    }
+    printf("\n");
+    pthread_exit(NULL);
+}
+
+void *print_odd(void *arg)
+{
+    int n = *(int *)arg;
+    for (int i = 1; i <= n; i += 2) {
+        printf("%d ", i);
+    }
+    printf("\n");
+    pthread_exit(NULL);
+}
+output:
+
+0 2 4 6 8 10 
+1 3 5 7 9 
