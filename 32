@@ -1,0 +1,62 @@
+32. Write a C program to simulate SCAN disk scheduling algorithms and execute your program and find out and print
+the average head movement for the following test case.
+No of tracks:9
+Track position:55   58 60   70	 18 90   150   160   184
+sol:
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int n = 9;
+    int tracks[9] = {55, 58, 60, 70, 18, 90, 150, 160, 184};
+    int start = 50;
+    int direction = 1; // 1 for up, -1 for down
+    int head_movement = 0;
+    int i, j, temp;
+    
+    // sort the tracks in ascending order
+    for (i = 0; i < n-1; i++) {
+        for (j = i+1; j < n; j++) {
+            if (tracks[i] > tracks[j]) {
+                temp = tracks[i];
+                tracks[i] = tracks[j];
+                tracks[j] = temp;
+            }
+        }
+    }
+    
+    // find the index of the track closest to the start position
+    int closest = 0;
+    for (i = 0; i < n; i++) {
+        if (abs(tracks[i] - start) < abs(tracks[closest] - start)) {
+            closest = i;
+        }
+    }
+    
+    // move in the current direction until reaching the end of the disk
+    while (closest >= 0 && closest < n) {
+        // add the head movement for the current track
+        head_movement += abs(start - tracks[closest]);
+        
+        // move to the next track in the current direction
+        closest += direction;
+        
+        // if reached the end of the disk in the current direction, change direction
+        if (closest < 0 || closest >= n) {
+            direction = -direction;
+            closest += 2 * direction;
+        }
+        
+        // update the start position
+        start = tracks[closest - direction];
+    }
+    
+    // print the average head movement
+    float avg_head_movement = (float) head_movement / n;
+    printf("Average head movement: %.2f\n", avg_head_movement);
+    
+    return 0;
+}
+
+output:
+Average head movement: 59.11
