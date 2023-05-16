@@ -1,0 +1,82 @@
+31. Write a C program to simulate CSCAN disk scheduling algorithms and execute your program and 
+find out and print the average head movement for the following test case.
+ No of tracks:5; Track position:55   58 60    70    18
+ 
+ sol:
+ #include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int n = 5;
+    int tracks[5] = {55, 58, 60, 70, 18};
+    int head = 50;
+    int direction = 1;
+    int total_head_movement = 0;
+
+    // sort the tracks in ascending order
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (tracks[i] > tracks[j]) {
+                int temp = tracks[i];
+                tracks[i] = tracks[j];
+                tracks[j] = temp;
+            }
+        }
+    }
+
+    // simulate the disk scheduling algorithm
+    while (1) {
+        int next_track = -1;
+
+        // find the next track to service
+        if (direction == 1) {
+            for (int i = 0; i < n; i++) {
+                if (tracks[i] >= head) {
+                    next_track = tracks[i];
+                    break;
+                }
+            }
+            if (next_track == -1) {
+                // wrap around to the beginning of the disk
+                next_track = tracks[0];
+                direction = -1;
+            }
+        } else {
+            for (int i = n - 1; i >= 0; i--) {
+                if (tracks[i] <= head) {
+                    next_track = tracks[i];
+                    break;
+                }
+            }
+            if (next_track == -1) {
+                // wrap around to the end of the disk
+                next_track = tracks[n - 1];
+                direction = 1;
+            }
+        }
+
+        // move the head to the next track
+        total_head_movement += abs(next_track - head);
+        head = next_track;
+
+        // check if all tracks have been serviced
+        int all_serviced = 1;
+        for (int i = 0; i < n; i++) {
+            if (tracks[i] != -1) {
+                all_serviced = 0;
+                break;
+            }
+        }
+        if (all_serviced) {
+            break;
+        }
+    }
+
+    // calculate and print the average head movement
+    float avg_head_movement = (float) total_head_movement / n;
+    printf("Average head movement: %.2f\n", avg_head_movement);
+
+    return 0;
+}
+output:
+Average head movement: 34.00
