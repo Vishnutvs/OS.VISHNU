@@ -1,0 +1,77 @@
+35. Write a C program to simulate the sequential file allocation in a very simple file system with a disk of 16 blocks,
+each block is of 1 KB size and first 8 blocks (0 to 7) are allocated to the “iNodes” and can’t be used by the file system.
+Blocks available for allocation are from block 8 to block 16. Minimum file size is 1 KB. Check that the start blocks and the
+required contiguous blocks are free. If free, allocate those blocks to the file. If not free, find the next available
+contiguous blocks.
+Test Case: If there are not enough contiguous blocks available for a file, the program must exit ()
+sol:
+#include <stdio.h>
+
+#define MAX_BLOCKS 16
+#define MIN_FILE_SIZE 1
+
+int main() {
+    int i, j, n, start_block, end_block, blocks_needed;
+    int blocks[MAX_BLOCKS] = {0};
+
+    // Initialize the iNodes blocks as allocated
+    for (i = 0; i < 8; i++) {
+        blocks[i] = 1;
+    }
+
+    // Loop to get input for file allocation
+    while (1) {
+        printf("Enter the starting block and the number of blocks needed (separated by a space): ");
+        scanf("%d %d", &start_block, &blocks_needed);
+
+        if (start_block < 8 || start_block + blocks_needed > MAX_BLOCKS) {
+            printf("Invalid block number or file size.\n");
+            continue;
+        }
+
+        // Check if the blocks are free
+        for (i = start_block; i < start_block + blocks_needed; i++) {
+            if (blocks[i] == 1) {
+                printf("Blocks are not available.\n");
+                break;
+            }
+        }
+
+        // Allocate the blocks if they are free
+        if (i == start_block + blocks_needed) {
+            for (j = start_block; j < start_block + blocks_needed; j++) {
+                blocks[j] = 1;
+            }
+            printf("Blocks allocated successfully.\n");
+        } else {
+            // Find next contiguous blocks
+            for (i = start_block + blocks_needed; i < MAX_BLOCKS; i++) {
+                if (blocks[i] == 0) {
+                    end_block = i;
+                    break;
+                }
+            }
+            if (i == MAX_BLOCKS) {
+                printf("Not enough contiguous blocks available for allocation.\n");
+                return 0;
+            }
+            for (i = start_block; i < end_block; i++) {
+                blocks[i] = 1;
+            }
+            printf("Blocks allocated successfully.\n");
+        }
+    }
+
+    return 0;
+}
+output:
+
+Enter the starting block and the number of blocks needed (separated by a space): 8
+1
+Blocks allocated successfully.
+Enter the starting block and the number of blocks needed (separated by a space): 6
+1
+Invalid block number or file size.
+Enter the starting block and the number of blocks needed (separated by a space): 9
+2
+Blocks allocated successfully.
