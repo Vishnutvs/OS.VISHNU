@@ -1,0 +1,75 @@
+#include <stdio.h> 
+ #include <stdlib.h> 
+  
+ #define DIRECTION_UP 1 
+ #define DIRECTION_DOWN 0 
+  
+ int compare(const void *a, const void *b) 
+ { 
+     return ((int)a - (int)b); 
+ } 
+  
+ int main() 
+ { 
+     int i, j, n, head, direction, current_track, total_movement = 0; 
+     int tracks[] = {55, 58, 60, 70, 18}; 
+  
+     n = sizeof(tracks) / sizeof(tracks[0]); 
+  
+     printf("Enter the initial position of head: "); 
+     scanf("%d", &head); 
+  
+     printf("Enter the direction of head movement (1 for up, 0 for down): "); 
+     scanf("%d", &direction); 
+  
+     // Sort the tracks in ascending order 
+     qsort(tracks, n, sizeof(int), compare); 
+  
+     // Find the current track index 
+     for (i = 0; i < n; i++) { 
+         if (head < tracks[i]) { 
+             current_track = i; 
+             break; 
+         } 
+     } 
+  
+     // If head is not present on the disk 
+     if (i == n) { 
+         current_track = n - 1; 
+         direction = DIRECTION_DOWN; 
+     } 
+  
+     // Perform the LOOK algorithm 
+     for (i = current_track; i >= 0; i--) { 
+         printf("%d -> ", tracks[i]); 
+         total_movement += abs(head - tracks[i]); 
+         head = tracks[i]; 
+     } 
+  
+     if (direction == DIRECTION_UP) { 
+         for (i = current_track + 1; i < n; i++) { 
+             printf("%d -> ", tracks[i]); 
+             total_movement += abs(head - tracks[i]); 
+             head = tracks[i]; 
+         } 
+     } else { 
+         for (i = current_track - 1; i >= 0; i--) { 
+             printf("%d -> ", tracks[i]); 
+             total_movement += abs(head - tracks[i]); 
+             head = tracks[i]; 
+         } 
+     } 
+  
+     printf("END\n"); 
+     printf("Total head movement: %d\n", total_movement); 
+     printf("Average head movement: %0.2f\n", (float)total_movement / n); 
+  
+     return 0; 
+ } 
+ output: 
+  
+ Enter the initial position of head: 55 
+ Enter the direction of head movement (1 for up, 0 for down): 1 
+ 58 -> 55 -> 18 -> 60 -> 70 -> END 
+ Total head movement: 95 
+ Average head movement: 19.00
