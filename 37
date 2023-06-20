@@ -1,0 +1,94 @@
+#include <stdio.h> 
+ #include <stdlib.h> 
+ #include <stdbool.h> 
+  
+ // Returns the index of the page in the future reference string 
+ int find_future_index(int page[], int n, int start, int end, int element) 
+ { 
+     for (int i = start; i <= end; i++) 
+     { 
+         if (page[i] == element) 
+             return i; 
+     } 
+     return n; 
+ } 
+  
+ // Returns true if the page is present in the page frame 
+ bool is_page_present(int page_frame[], int n, int element) 
+ { 
+     for (int i = 0; i < n; i++) 
+     { 
+         if (page_frame[i] == element) 
+             return true; 
+     } 
+     return false; 
+ } 
+  
+ // Returns the index of the page to be replaced 
+ int find_page_to_replace(int page_frame[], int n, int page[], int page_len, int start, int end) 
+ { 
+     int max_index = -1; 
+     int max_page = -1; 
+     for (int i = 0; i < n; i++) 
+     { 
+         int page_index = find_future_index(page, page_len, start, end, page_frame[i]); 
+         if (page_index > max_index) 
+         { 
+             max_index = page_index; 
+             max_page = i; 
+         } 
+     } 
+     return max_page; 
+ } 
+  
+ // Optimal page replacement algorithm 
+ int optimal_page_replacement(int page[], int page_len, int page_frames) 
+ { 
+     int page_faults = 0; 
+     int page_frame[page_frames]; 
+     for (int i = 0; i < page_frames; i++) 
+     { 
+         page_frame[i] = -1; 
+     } 
+  
+     for (int i = 0; i < page_len; i++) 
+     { 
+         if (!is_page_present(page_frame, page_frames, page[i])) 
+         { 
+             int replace_index = -1; 
+             for (int j = 0; j < page_frames; j++) 
+             { 
+                 if (page_frame[j] == -1) 
+                 { 
+                     replace_index = j; 
+                     break; 
+                 } 
+                 if (find_future_index(page, page_len, i + 1, page_len - 1, page_frame[j]) == page_len) 
+                 { 
+                     replace_index = j; 
+                     break; 
+                 } 
+             } 
+             if (replace_index == -1) 
+             { 
+                 replace_index = find_page_to_replace(page_frame, page_frames, page, page_len, i + 1, page_len - 1); 
+             } 
+             page_frame[replace_index] = page[i]; 
+             page_faults++; 
+         } 
+     } 
+     return page_faults; 
+ } 
+  
+ int main() 
+ { 
+     int page[] = {4, 1, 2, 4, 3, 2, 1, 5}; 
+     int page_len = sizeof(page) / sizeof(page[0]); 
+     int page_frames = 3; 
+     int page_faults = optimal_page_replacement(page, page_len, page_frames); 
+     printf("Number of page faults: %d\n", page_faults); 
+     return 0; 
+ } 
+ output: 
+  
+ Number of page faults: 5
