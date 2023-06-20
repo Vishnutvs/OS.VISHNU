@@ -1,0 +1,52 @@
+#include <stdio.h> 
+ #include <stdlib.h> 
+  
+ int main() { 
+     int n = 5; 
+     int tracks[] = {55, 58, 60, 70, 18}; 
+     int head_pos = 50; 
+     int i, j, temp, sum = 0; 
+  
+     // sort tracks in ascending order 
+     for (i = 0; i < n - 1; i++) { 
+         for (j = i + 1; j < n; j++) { 
+             if (tracks[i] > tracks[j]) { 
+                 temp = tracks[i]; 
+                 tracks[i] = tracks[j]; 
+                 tracks[j] = temp; 
+             } 
+         } 
+     } 
+  
+     // find index of head position in tracks 
+     int head_index; 
+     for (i = 0; i < n; i++) { 
+         if (tracks[i] >= head_pos) { 
+             head_index = i; 
+             break; 
+         } 
+     } 
+  
+     // print sequence of disk access 
+     printf("Disk Access Sequence: %d ", head_pos); 
+     for (i = head_index; i < n; i++) { 
+         printf("%d ", tracks[i]); 
+         sum += abs(head_pos - tracks[i]); 
+         head_pos = tracks[i]; 
+     } 
+     for (i = 0; i < head_index; i++) { 
+         printf("%d ", tracks[i]); 
+         sum += abs(head_pos - tracks[i]); 
+         head_pos = tracks[i]; 
+     } 
+  
+     // calculate and print average head movement 
+     float avg = (float)sum / n; 
+     printf("\nAverage Head Movement: %.2f\n", avg); 
+  
+     return 0; 
+ } 
+ output: 
+  
+ Disk Access Sequence: 50 55 58 60 70 18  
+ Average Head Movement: 14.40
