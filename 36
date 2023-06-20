@@ -1,0 +1,57 @@
+#include<stdio.h> 
+ #include<stdlib.h> 
+  
+ #define MAX 1000 
+  
+ int abs(int a) { 
+     return a > 0 ? a : -a; 
+ } 
+  
+ int findClosest(int arr[], int n, int head) { 
+     int closest = MAX, index = -1; 
+     for(int i = 0; i < n; i++) { 
+         if(abs(arr[i] - head) < closest) { 
+             closest = abs(arr[i] - head); 
+             index = i; 
+         } 
+     } 
+     return index; 
+ } 
+  
+ int main() { 
+     int n, head, total = 0; 
+     int queue[MAX]; 
+     printf("Enter the number of tracks: "); 
+     scanf("%d", &n); 
+     printf("Enter the track positions:\n"); 
+     for(int i = 0; i < n; i++) { 
+         scanf("%d", &queue[i]); 
+     } 
+     printf("Enter the initial head position: "); 
+     scanf("%d", &head); 
+     printf("SSTF Disk Scheduling Algorithm\n"); 
+     printf("Order of accessing tracks:\n"); 
+     for(int i = 0; i < n; i++) { 
+         int index = findClosest(queue, n, head); 
+         int distance = abs(head - queue[index]); 
+         total += distance; 
+         head = queue[index]; 
+         queue[index] = MAX; 
+         printf("%d ", head); 
+     } 
+     printf("\n"); 
+     printf("Total head movement: %d\n", total); 
+     printf("Average head movement: %f\n", (float)total/n); 
+     return 0; 
+ } 
+ output: 
+  
+ Enter the number of tracks: 5 
+ Enter the track positions: 
+ 55   58    60   70   18 
+ Enter the initial head position: 55 
+ SSTF Disk Scheduling Algorithm 
+ Order of accessing tracks: 
+ 55 58 60 70 18  
+ Total head movement: 67 
+ Average head movement: 13.400000
